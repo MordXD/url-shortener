@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  redis:
+    image: redis:7
+    ports: ['6379:6379']
+  backend:
+    build:
+      context: ./url-shortener-backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env.example
+    ports: ['8000:8000']
+    depends_on:
+      - redis

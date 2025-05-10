@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.so
+*.egg-info/
+.eggs/
+*.sqlite3
+
+# Poetry
+poetry.lock
+
+# Virtual env
+.venv/
+env/
+venv/
+ENV/
+
+# FastAPI logs / runtime
+*.log
+*.db
+instance/
+*.pid
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Docker
+*.tar
+*.gz
+*.bak
+docker-compose.override.yml
+
+# Env files
+.env
+
+
+# Node (frontend)
+node_modules/
+dist/
+*.tsbuildinfo
+
+# React
+url-shortener-frontend/.next/
+url-shortener-frontend/.env
+url-shortener-frontend/build/
+url-shortener-frontend/coverage/
+
+# Pytest
+htmlcov/
+.coverage
+.pytest_cache/
+
+# MyPy, coverage, etc.
+.mypy_cache/
+.dmypy.json
+.cache/
+.tox/
