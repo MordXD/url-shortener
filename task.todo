@@ -1,0 +1,120 @@
+Task 1: Настройка базовой конфигурации бэкенда:
+    ✔ Заполнить `core/config.py`: @done(25-05-20 19:31)
+      ✔ Создать класс `Settings` с параметрами: @done(25-05-20 19:31)
+        ```python
+        REDIS_HOST: str = "redis"
+        REDIS_PORT: int = 6379
+        BASE_URL: str = "http://localhost:8000"
+        RATE_LIMIT: int = 10  # Максимум запросов в минуту
+        ```
+      ✔ Добавить валидацию через `pydantic.BaseSettings` @done(25-05-20 19:32)
+    ✔ [ ] Инициализировать Redis-подключение в `main.py`: @started(25-05-20 19:38) @done(25-05-20 20:42) @lasted(1h4m31s)
+      ✔ Создать асинхронный Redis-клиент (используя `redis.asyncio`) @done(25-05-20 19:46)
+      ✔ Добавить обработчики для старта/остановки подключения к Redis @done(25-05-20 20:46)
+    
+    ---
+    
+Task 2: Реализация сервиса сокращения URL:
+    - [ ] Заполнить `services/shortener.py`:
+      - Реализовать функцию `create_short_url(original_url: str) -> str`:
+        - Генерировать уникальный 6-символьный код (a-zA-Z0-9)
+        - Сохранять в Redis: `short_code -> original_url`
+        - Возвращать полный URL вида `{BASE_URL}/{short_code}`
+      - Реализовать функцию `get_original_url(short_code: str) -> Optional[str]`:
+        - Получать оригинальный URL из Redis
+        - Обрабатывать случай отсутствия кода
+    - [ ] Добавить тесты в `tests/test_shortener.py`:
+      - Тест генерации уникальных кодов
+      - Тест сохранения/получения URL из Redis (использовать моки)
+    
+    ---
+    
+Task 3: Реализация rate limiting:
+    - [ ] Заполнить `services/limiter.py`:
+      - Создать декоратор `rate_limited`:
+        - Использовать Redis для подсчета запросов по IP
+        - Блокировать запросы при превышении `RATE_LIMIT`
+        - Возвращать `HTTP 429 Too Many Requests`
+    - [ ] Интегрировать лимитер в API:
+      - Применить декоратор к эндпоинту `/shorten`
+    - [ ] Тесты в `tests/test_limiter.py`:
+      - Симуляция 15 запросов подряд
+      - Проверка статуса 429 после лимита
+    
+    ---
+    
+Task 4: Реализация API эндпоинтов:
+    - [ ] Заполнить `api.py`:
+      - Создать роутер FastAPI
+      - Эндпоинт `POST /shorten`:
+        - Принимать JSON `{"original_url": "..."}`
+        - Валидировать URL через `pydantic.AnyUrl`
+        - Возвращать короткий URL
+      - Эндпоинт `GET /{short_code}`:
+        - Редирект на оригинальный URL (HTTP 307)
+        - Обработка несуществующих кодов (HTTP 404)
+    - [ ] Тесты API в `tests/test_api.py`:
+      - Тест успешного создания URL
+      - Тест редиректа
+      - Тест обработки невалидных URL
+    
+    ---
+    
+Task 5: Интеграция компонентов:
+    - [ ] Заполнить `main.py`:
+      - Создать экземпляр `FastAPI()`
+      - Подключить роутер из `api.py`
+      - Добавить обработчики ошибок
+      - Интегрировать конфиг из `core/config.py`
+    - [ ] Проверить работу через Swagger:
+      - Запустить `docker-compose up`
+      - Открыть `http://localhost:8000/docs`
+      - Протестировать все эндпоинты
+    
+    ---
+    
+Task 6: Настройка Docker окружения:
+    - [ ] Доработать `docker-compose.yml`:
+      - Добавить healthcheck для Redis
+      - Настроить volumes для Redis данных
+      - Добавить переменные окружения для бэкенда
+    - [ ] Проверить:
+      - Сохранение данных при перезапуске контейнеров
+      - Автоматический реконнект бэкенда к Redis
+    
+    ---
+    
+Task 7: Документация и финальные проверки:
+    - [ ] Добавить примеры запросов в `README.md`
+    - [ ] Настроить `.gitignore` для Python/Redis
+    - [ ] Прогнать линтеры:
+      ```bash
+      poetry run black .
+      poetry run isort .
+      poetry run flake8
+      ```
+    - [ ] Проверить покрытие тестами:
+      ```bash
+      poetry run pytest --cov=app --cov-report=html
+      ```
+    
+    ---    
+Task 8 Базовый фронтенд (React):
+    - [ ] Инициализировать React в `url-shortener-frontend`:
+      ```bash
+      npx create-react-app .
+      ```
+    - [ ] Создать компонент формы:
+      - Поле ввода URL
+      - Кнопка "Сократить"
+      - Блок с результатом (короткий URL)
+    - [ ] Реализовать запрос к бэкенду:
+      ```javascript
+      fetch('http://localhost:8000/shorten', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ original_url: inputUrl })
+      })
+      ```
+    - [ ] Добавить обработку ошибок (429, 400)
+    

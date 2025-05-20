@@ -15,12 +15,13 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 WORKDIR /app
 
 # Копируем только зависимости для кэша
-COPY pyproject.toml poetry.lock* ./
+COPY pyproject.toml ./
 RUN poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi --only main
+    poetry lock && \
+    poetry install --no-interaction --no-ansi
 
 # 5. Копируем сам код проекта
 COPY app/ ./app/
 
 # 6. Запускаем сервер FastAPI
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
