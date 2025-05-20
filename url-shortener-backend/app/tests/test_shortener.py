@@ -1,7 +1,10 @@
-from app.services.shortener import ShortenerService
+from unittest.mock import AsyncMock
+
 import pytest
 import pytest_asyncio
-from unittest.mock import AsyncMock
+
+from app.services.shortener import ShortenerService
+
 
 @pytest.fixture
 def redis_mock():
@@ -9,6 +12,7 @@ def redis_mock():
     redis_client.set = AsyncMock()
     redis_client.get = AsyncMock()
     return redis_client
+
 
 @pytest.mark.asyncio
 async def test_create_short_url(redis_mock):
@@ -18,6 +22,7 @@ async def test_create_short_url(redis_mock):
     assert short_code.isalnum()
     redis_mock.set.assert_called_once()
 
+
 @pytest.mark.asyncio
 async def test_get_original_url(redis_mock):
     redis_mock.get.return_value = "https://www.google.com"
@@ -25,7 +30,8 @@ async def test_get_original_url(redis_mock):
     original_url = await shortener.get_original_url("abc123")
     assert original_url == "https://www.google.com"
     redis_mock.get.assert_called_once_with("abc123")
-    
+
+
 @pytest.mark.asyncio
 async def test_get_original_url_not_found(redis_mock):
     redis_mock.get.return_value = None
@@ -33,5 +39,3 @@ async def test_get_original_url_not_found(redis_mock):
     original_url = await shortener.get_original_url("nonexistent")
     assert original_url is None
     redis_mock.get.assert_called_once_with("nonexistent")
-    
-    

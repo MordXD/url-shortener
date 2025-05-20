@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class Settings(BaseSettings):
     redis_host: str = "redis"
     redis_port: int = 6379
@@ -9,5 +10,6 @@ class Settings(BaseSettings):
     ttl: int = 86400
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
 
 settings = Settings()

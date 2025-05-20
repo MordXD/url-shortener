@@ -1,10 +1,11 @@
 import time
 from functools import wraps
 from typing import Callable, Optional
+
 from fastapi import HTTPException, Request, status
 
-from app.redis import RedisClient
 from app.core.config import settings
+from app.redis import RedisClient
 
 
 class RateLimiter:
@@ -39,10 +40,11 @@ class RateLimiter:
 def rate_limited(redis_client_getter: Callable[[], RedisClient]):
     """
     Декоратор для ограничения частоты запросов.
-    
+
     Args:
         redis_client_getter: Функция, возвращающая RedisClient
     """
+
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs):
@@ -50,18 +52,18 @@ def rate_limited(redis_client_getter: Callable[[], RedisClient]):
             client_ip = request.client.host
             redis_client = redis_client_getter()
             limiter = RateLimiter(redis_client)
-            
+
             # Проверяем, не превышен ли лимит
             is_limited = await limiter.is_rate_limited(client_ip)
             if is_limited:
                 raise HTTPException(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    detail="Rate limit exceeded. Please try again later."
+                    detail="Rate limit exceeded. Please try again later.",
                 )
-            
+
             # Если лимит не превышен, выполняем оригинальную функцию
             return await func(request, *args, **kwargs)
-        
+
         return wrapper
-    
+
     return decorator

@@ -60,3 +60,9 @@ htmlcov/
 .dmypy.json
 .cache/
 .tox/
+
+# Redis
+*.rdb
+dump.rdb
+redis-data/
+*.aof
