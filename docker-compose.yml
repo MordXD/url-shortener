@@ -17,7 +17,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - BASE_URL=http://localhost:8000
+      - BASE_URL=http://localhost/api
       - RATE_LIMIT=5
       - REDIS_URL=redis://redis:6379/0
       - TTL=86400
@@ -28,6 +28,13 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+  frontend:
+    build:
+      context: ./url-shorterner-frontend
+      dockerfile: Dockerfile
+    ports: ['80:80']
+    depends_on:
+      - backend
 volumes:
   redis-data:
     driver: local
