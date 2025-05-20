@@ -31,6 +31,12 @@ pytest = "^8.3.5"
 pytest-asyncio = "^0.26.0"
 httpx = "^0.28.1"
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "asyncio: mark a test as an asyncio test",
+]
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
